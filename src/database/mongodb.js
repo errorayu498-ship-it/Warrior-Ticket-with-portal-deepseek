@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
-const chalk = require('chalk');
+
+const colors = {
+    green: (text) => `\x1b[32m${text}\x1b[0m`,
+    red: (text) => `\x1b[31m${text}\x1b[0m`,
+};
 
 // Ticket Schema
 const ticketSchema = new mongoose.Schema({
@@ -14,6 +18,7 @@ const ticketSchema = new mongoose.Schema({
         default: 'open'
     },
     ticketNumber: Number,
+    closeReason: String,
     createdAt: { type: Date, default: Date.now },
     closedAt: Date,
     closedBy: String,
@@ -63,9 +68,9 @@ const ServerConfig = mongoose.model('ServerConfig', serverConfigSchema);
 async function connectDB() {
     try {
         await mongoose.connect(process.env.MONGO_URI);
-        console.log(chalk.green('✅ Connected to MongoDB successfully!'));
+        console.log(colors.green('✅ Connected to MongoDB successfully!'));
     } catch (error) {
-        console.error(chalk.red('❌ MongoDB connection error:'), error);
+        console.error(colors.red('❌ MongoDB connection error:'), error);
         process.exit(1);
     }
 }
