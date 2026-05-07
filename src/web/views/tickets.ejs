@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tickets - Warrior Ticket Bot</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            padding: 30px;
+        }
+        h1 { color: #667eea; margin-bottom: 20px; }
+        .tabs {
+            margin-bottom: 30px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: #16213e;
+            color: white;
+            border: none;
+            margin-right: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .tab.active {
+            background: #667eea;
+        }
+        table {
+            width: 100%;
+            background: #16213e;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        th {
+            background: #667eea;
+            padding: 15px;
+            text-align: left;
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #333;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-open { background: #27ae60; }
+        .status-closed { background: #e74c3c; }
+        .back-link {
+            color: #aaa;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <a href="/guild/<%= guild.id %>" class="back-link">← Back to Config</a>
+    <h1>🎫 Tickets - <%= guild.name %></h1>
+    
+    <div class="tabs">
+        <button class="tab <%= status === 'open' ? 'active' : '' %>" 
+                onclick="window.location.href='?status=open'">Open Tickets</button>
+        <button class="tab <%= status === 'closed' ? 'active' : '' %>" 
+                onclick="window.location.href='?status=closed'">Closed Tickets</button>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Ticket #</th>
+                <th>Creator ID</th>
+                <th>Category</th>
+                <th>Created At</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% tickets.forEach(ticket => { %>
+                <tr>
+                    <td>#<%= ticket.ticketNumber %></td>
+                    <td><%= ticket.creatorId %></td>
+                    <td><%= ticket.category %></td>
+                    <td><%= new Date(ticket.createdAt).toLocaleString() %></td>
+                    <td>
+                        <span class="status-badge status-<%= ticket.status %>">
+                            <%= ticket.status.toUpperCase() %>
+                        </span>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</body>
+</html>
