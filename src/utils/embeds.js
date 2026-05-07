@@ -2,6 +2,21 @@ const { EmbedBuilder } = require('discord.js');
 
 class EmbedCreator {
     static async createTicketPanel(panelData) {
+        if (!panelData || !panelData.embed) {
+            panelData = {
+                embed: {
+                    title: '🎫 Ticket System',
+                    description: 'Select a category',
+                    footer: 'Ticket Bot',
+                    color: '#5865F2',
+                    thumbnail: '',
+                    image: '',
+                    icon: ''
+                },
+                options: [{ label: 'General', description: 'General ticket', emoji: '🎫' }]
+            };
+        }
+
         const embed = new EmbedBuilder()
             .setTitle(panelData.embed.title || '🎫 Warrior Ticket System')
             .setDescription(panelData.embed.description || 'Please select a ticket category to get started!')
@@ -19,14 +34,18 @@ class EmbedCreator {
             embed.setAuthor({ name: 'Ticket System', iconURL: panelData.embed.icon });
         }
 
-        // Add fields for each ticket option
-        panelData.options.forEach((option, index) => {
-            embed.addFields({
-                name: `${option.emoji || '🎫'} ${option.label}`,
-                value: option.description || `Create a ${option.label} ticket`,
-                inline: true
-            });
-        });
+        // Add fields for each ticket option safely
+        const options = panelData.options || [];
+        for (let i = 0; i < Math.min(options.length, 25); i++) {
+            const option = options[i];
+            if (option && option.label) {
+                embed.addFields({
+                    name: `${option.emoji || '🎫'} ${option.label}`,
+                    value: option.description || `Create a ${option.label} ticket`,
+                    inline: true
+                });
+            }
+        }
 
         return embed;
     }
@@ -35,9 +54,9 @@ class EmbedCreator {
         return new EmbedBuilder()
             .setTitle('🎫 Ticket Created Successfully')
             .setDescription(`Welcome ${user}! Support staff will be with you shortly.\n\n` +
-                `**Ticket ID:** #${ticket.ticketNumber}\n` +
-                `**Category:** ${category.label}\n` +
-                `**Created By:** ${user.tag}\n\n` +
+                `**Ticket ID:** #${ticket.ticketNumber || 'N/A'}\n` +
+                `**Category:** ${category?.label || ticket.category || 'N/A'}\n` +
+                `**Created By:** ${user.tag || user.username}\n\n` +
                 `Please describe your issue in detail while you wait.`)
             .setColor('#00FF00')
             .setFooter({ text: 'Warrior Ticket Bot • Open Ticket' })
@@ -57,11 +76,11 @@ class EmbedCreator {
     static createTranscript(ticket, messages) {
         return new EmbedBuilder()
             .setTitle('📝 Ticket Transcript')
-            .setDescription(`**Ticket #${ticket.ticketNumber}**\n` +
+            .setDescription(`**Ticket #${ticket.ticketNumber || 'N/A'}**\n` +
                 `**Opened by:** <@${ticket.creatorId}>\n` +
                 `**Closed by:** ${ticket.closedBy ? `<@${ticket.closedBy}>` : 'Unknown'}\n` +
-                `**Category:** ${ticket.category}\n` +
-                `**Messages:** ${messages.length}`)
+                `**Category:** ${ticket.category || 'N/A'}\n` +
+                `**Messages:** ${messages?.length || 0}`)
             .setColor('#5865F2')
             .setFooter({ text: 'Warrior Ticket Bot • Transcript' })
             .setTimestamp();
@@ -70,7 +89,7 @@ class EmbedCreator {
     static errorEmbed(message) {
         return new EmbedBuilder()
             .setTitle('❌ Error')
-            .setDescription(message)
+            .setDescription(message || 'An error occurred')
             .setColor('#FF0000')
             .setFooter({ text: 'Warrior Ticket Bot • Error' })
             .setTimestamp();
@@ -79,7 +98,7 @@ class EmbedCreator {
     static successEmbed(message) {
         return new EmbedBuilder()
             .setTitle('✅ Success')
-            .setDescription(message)
+            .setDescription(message || 'Operation completed')
             .setColor('#00FF00')
             .setFooter({ text: 'Warrior Ticket Bot • Success' })
             .setTimestamp();
