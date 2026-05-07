@@ -1,186 +1,475 @@
+<!-- src/web/views/guild-config.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configure <%= guild.name %> - Warrior Ticket Bot</title>
+    <title><%= guild.name %> • Premium Config</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg: #0a0a0a;
+            --card: #111111;
+            --border: #222222;
+            --red: #FF0000;
+            --red-dark: #CC0000;
+            --text: #fff;
+            --text-secondary: #999;
+            --text-muted: #666;
+            --input-bg: #0f0f0f;
+            --hover: #1a1a1a;
+            --success: #00ff00;
+            --warning: #ffaa00;
+        }
+        
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #1a1a2e;
-            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(255,0,0,0.03) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(255,0,0,0.03) 0%, transparent 50%);
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: #0f0f0f;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid var(--border);
+            padding: 30px 0;
+            z-index: 100;
+        }
+        
+        .sidebar-header {
+            padding: 0 25px 30px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+        
+        .sidebar-logo {
+            font-size: 40px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .sidebar-title {
+            color: var(--red);
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        
+        .sidebar-nav {
+            padding: 20px 15px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: all 0.3s;
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-size: 15px;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,0,0,0.1);
+            color: var(--red);
+        }
+        
+        .nav-icon { margin-right: 12px; font-size: 20px; }
+        
+        /* MAIN */
+        .main-content {
+            margin-left: 280px;
+            padding: 40px;
+            max-width: 1400px;
+        }
+        
+        .page-header {
+            margin-bottom: 40px;
+        }
+        
+        .back-btn {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .back-btn:hover { color: var(--red); }
+        
+        .page-title {
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text);
+        }
+        
+        .page-title span { color: var(--red); }
+        
+        /* CARDS */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             padding: 30px;
+            margin-bottom: 25px;
+            transition: border-color 0.3s;
         }
-        h1 {
-            color: #667eea;
-            margin-bottom: 30px;
+        
+        .card:hover { border-color: #333; }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
         }
-        .config-section {
-            background: #16213e;
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
+        
+        .card-title {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--red);
         }
-        .config-section h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
-        }
+        
+        /* FORM ELEMENTS */
         .form-group {
             margin-bottom: 20px;
         }
-        label {
+        
+        .form-label {
             display: block;
-            color: #aaa;
-            margin-bottom: 5px;
-            font-weight: bold;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
         }
-        input[type="text"], input[type="url"], textarea, select {
+        
+        .form-input, .form-textarea, .form-select {
             width: 100%;
-            padding: 12px;
-            background: #1a1a2e;
-            border: 1px solid #333;
-            border-radius: 5px;
-            color: white;
-            font-size: 14px;
-        }
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        input[type="color"] {
-            width: 60px;
-            height: 40px;
-            padding: 0;
-            border: none;
-            cursor: pointer;
-        }
-        select[multiple] {
-            min-height: 120px;
-        }
-        button {
-            padding: 12px 30px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background: #5a67d8;
-        }
-        .option-group {
-            background: #1a1a2e;
-            padding: 20px;
+            padding: 12px 16px;
+            background: var(--input-bg);
+            border: 1px solid #222;
             border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #667eea;
+            color: var(--text);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            transition: all 0.3s;
         }
-        .option-group h3 {
-            color: #667eea;
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--red);
+            box-shadow: 0 0 15px rgba(255,0,0,0.1);
+        }
+        
+        .form-textarea { min-height: 120px; resize: vertical; }
+        .form-select[multiple] { min-height: 150px; }
+        
+        /* BUTTONS */
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-red {
+            background: linear-gradient(135deg, var(--red), var(--red-dark));
+            color: #fff;
+        }
+        
+        .btn-red:hover {
+            box-shadow: 0 8px 25px rgba(255,0,0,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--red);
+            color: var(--red);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(255,0,0,0.1);
+        }
+        
+        .btn-green {
+            background: linear-gradient(135deg, #00cc00, #009900);
+            color: #fff;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        /* OPTION CARD */
+        .option-card {
+            background: var(--input-bg);
+            border: 1px solid #222;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 15px;
+            border-left: 3px solid var(--red);
+        }
+        
+        .option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 15px;
         }
-        .back-link {
-            color: #aaa;
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 20px;
+        
+        .option-number {
+            color: var(--red);
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 2px;
         }
-        .success-message {
-            background: #27ae60;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+        
+        .btn-remove {
+            background: rgba(255,0,0,0.1);
+            color: var(--red);
+            border: 1px solid rgba(255,0,0,0.3);
+            padding: 6px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        
+        .btn-remove:hover {
+            background: rgba(255,0,0,0.2);
+        }
+        
+        /* MODAL */
+        .modal {
             display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active { display: flex; }
+        
+        .modal-content {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 40px;
+            width: 500px;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            color: var(--red);
+            margin-bottom: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+        
+        /* ALERT */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            display: none;
+        }
+        
+        .alert-success {
+            background: rgba(0,255,0,0.1);
+            border: 1px solid rgba(0,255,0,0.3);
+            color: var(--success);
+        }
+        
+        .alert-danger {
+            background: rgba(255,0,0,0.1);
+            border: 1px solid rgba(255,0,0,0.3);
+            color: var(--red);
+        }
+        
+        .alert.active { display: block; }
+        
+        .input-group-inline {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 20px; }
+            .btn-group { flex-direction: column; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="/" class="back-link">← Back to Dashboard</a>
-        <h1>⚙️ Configure: <%= guild.name %></h1>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-logo">🎫</span>
+            <h2 class="sidebar-title"><%= botName %></h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/" class="nav-item">🏠 Dashboard</a>
+            <a href="/guild/<%= guild.id %>" class="nav-item active">⚙️ Configure</a>
+            <a href="/guild/<%= guild.id %>/tickets" class="nav-item">🎫 Tickets</a>
+            <a href="/logout" class="nav-item">🚪 Logout</a>
+        </nav>
+    </aside>
+    
+    <!-- MAIN -->
+    <main class="main-content">
+        <div class="page-header">
+            <a href="/" class="back-btn">← Back to Dashboard</a>
+            <h1 class="page-title">⚙️ Configure <span><%= guild.name %></span></h1>
+        </div>
         
-        <div class="success-message" id="successMessage">Settings saved successfully!</div>
+        <div class="alert alert-success" id="alertSuccess"></div>
+        <div class="alert alert-danger" id="alertError"></div>
         
-        <form id="panelForm" onsubmit="savePanel(event)">
-            <!-- Embed Configuration -->
-            <div class="config-section">
-                <h2>📝 Embed Settings</h2>
+        <form id="mainForm">
+            
+            <!-- EMBED CONFIG -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">📝 Embed Settings</h3>
+                </div>
+                
                 <div class="form-group">
-                    <label>Embed Title</label>
-                    <input type="text" name="title" value="<%= panel.embed.title %>" required>
+                    <label class="form-label">Embed Title</label>
+                    <input type="text" name="title" class="form-input" value="<%= panel.embed?.title || '🎫 Ticket System' %>">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Description (Markdown Supported)</label>
+                    <textarea name="description" class="form-textarea"><%= panel.embed?.description || 'Select a category' %></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Footer Text</label>
+                    <input type="text" name="footer" class="form-input" value="<%= panel.embed?.footer || 'Ticket Bot' %>">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label class="form-label">Color</label>
+                        <input type="color" name="color" class="form-input" value="<%= panel.embed?.color || '#FF0000' %>" style="height: 45px; padding: 5px; cursor: pointer;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Thumbnail URL</label>
+                        <input type="url" name="thumbnail" class="form-input" value="<%= panel.embed?.thumbnail || '' %>" placeholder="https://...">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Image URL</label>
+                        <input type="url" name="image" class="form-input" value="<%= panel.embed?.image || '' %>" placeholder="https://...">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>Embed Description</label>
-                    <textarea name="description" required><%= panel.embed.description %></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Footer Text</label>
-                    <input type="text" name="footer" value="<%= panel.embed.footer %>">
-                </div>
-                <div class="form-group">
-                    <label>Embed Color</label>
-                    <input type="color" name="color" value="<%= panel.embed.color %>">
-                </div>
-                <div class="form-group">
-                    <label>Thumbnail URL</label>
-                    <input type="url" name="thumbnail" value="<%= panel.embed.thumbnail %>">
-                </div>
-                <div class="form-group">
-                    <label>Image URL</label>
-                    <input type="url" name="image" value="<%= panel.embed.image %>">
-                </div>
-                <div class="form-group">
-                    <label>Icon URL</label>
-                    <input type="url" name="icon" value="<%= panel.embed.icon %>">
+                    <label class="form-label">Icon URL</label>
+                    <input type="url" name="icon" class="form-input" value="<%= panel.embed?.icon || '' %>" placeholder="https://...">
                 </div>
             </div>
             
-            <!-- Ticket Options -->
-            <div class="config-section">
-                <h2>🎫 Ticket Options</h2>
+            <!-- TICKET OPTIONS -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">🎫 Ticket Options</h3>
+                    <button type="button" class="btn btn-outline" onclick="addOption()">+ Add Option</button>
+                </div>
+                
                 <div id="optionsContainer">
-                    <% panel.options.forEach((option, index) => { %>
-                        <div class="option-group">
-                            <h3>Option <%= index + 1 %></h3>
-                            <div class="form-group">
-                                <label>Label</label>
-                                <input type="text" name="option_<%= index %>_label" value="<%= option.label %>" required>
+                    <% 
+                    const opts = panel.options || [];
+                    opts.forEach((option, index) => { 
+                    %>
+                        <div class="option-card" id="option-<%= index %>">
+                            <div class="option-header">
+                                <span class="option-number">OPTION #<%= index + 1 %></span>
+                                <% if (opts.length > 1) { %>
+                                    <button type="button" class="btn-remove" onclick="removeOption(<%= index %>)">✕ Remove</button>
+                                <% } %>
                             </div>
-                            <div class="form-group">
-                                <label>Description</label>
-                                <input type="text" name="option_<%= index %>_description" value="<%= option.description %>">
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label class="form-label">Label</label>
+                                    <input type="text" name="option_<%= index %>_label" class="form-input" value="<%= option.label %>" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Emoji</label>
+                                    <input type="text" name="option_<%= index %>_emoji" class="form-input" value="<%= option.emoji || '🎫' %>">
+                                </div>
                             </div>
+                            
                             <div class="form-group">
-                                <label>Emoji</label>
-                                <input type="text" name="option_<%= index %>_emoji" value="<%= option.emoji %>">
+                                <label class="form-label">Description</label>
+                                <input type="text" name="option_<%= index %>_description" class="form-input" value="<%= option.description || '' %>">
                             </div>
+                            
                             <div class="form-group">
-                                <label>Category Channel</label>
-                                <select name="option_<%= index %>_categoryId">
+                                <label class="form-label">Category Channel</label>
+                                <select name="option_<%= index %>_categoryId" class="form-select">
                                     <option value="">None</option>
                                     <% categories.forEach(cat => { %>
-                                        <option value="<%= cat.id %>" <%= option.categoryId === cat.id ? 'selected' : '' %>>
-                                            <%= cat.name %>
-                                        </option>
+                                        <option value="<%= cat.id %>" <%= option.categoryId === cat.id ? 'selected' : '' %>><%= cat.name %></option>
                                     <% }) %>
                                 </select>
                             </div>
+                            
                             <div class="form-group">
-                                <label>Allowed Support Roles</label>
-                                <select name="option_<%= index %>_allowedRoles" multiple>
+                                <label class="form-label">Allowed Support Roles</label>
+                                <select name="option_<%= index %>_allowedRoles" class="form-select" multiple>
                                     <% roles.forEach(role => { %>
-                                        <option value="<%= role.id %>" 
-                                            <%= option.allowedRoles && option.allowedRoles.includes(role.id) ? 'selected' : '' %>>
+                                        <option value="<%= role.id %>" <%= option.allowedRoles?.includes(role.id) ? 'selected' : '' %>>
                                             <%= role.name %>
                                         </option>
                                     <% }) %>
@@ -189,29 +478,31 @@
                         </div>
                     <% }) %>
                 </div>
-                <input type="hidden" name="optionCount" value="<%= panel.options.length %>">
+                <input type="hidden" name="optionCount" id="optionCount" value="<%= opts.length %>">
             </div>
             
-            <!-- Role Configuration -->
-            <div class="config-section">
-                <h2>👥 Role Configuration</h2>
+            <!-- ROLES -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">👥 Role Configuration</h3>
+                </div>
+                
                 <div class="form-group">
-                    <label>Admin Roles (Can access all tickets)</label>
-                    <select name="adminRoles" multiple>
+                    <label class="form-label">Admin Roles (Full Access)</label>
+                    <select name="adminRoles" class="form-select" multiple>
                         <% roles.forEach(role => { %>
-                            <option value="<%= role.id %>"
-                                <%= panel.adminRoles && panel.adminRoles.includes(role.id) ? 'selected' : '' %>>
+                            <option value="<%= role.id %>" <%= panel.adminRoles?.includes(role.id) ? 'selected' : '' %>>
                                 <%= role.name %>
                             </option>
                         <% }) %>
                     </select>
                 </div>
+                
                 <div class="form-group">
-                    <label>Support Roles (Category-specific access)</label>
-                    <select name="supportRoles" multiple>
+                    <label class="form-label">Support Roles</label>
+                    <select name="supportRoles" class="form-select" multiple>
                         <% roles.forEach(role => { %>
-                            <option value="<%= role.id %>"
-                                <%= panel.supportRoles && panel.supportRoles.includes(role.id) ? 'selected' : '' %>>
+                            <option value="<%= role.id %>" <%= panel.supportRoles?.includes(role.id) ? 'selected' : '' %>>
                                 <%= role.name %>
                             </option>
                         <% }) %>
@@ -219,14 +510,15 @@
                 </div>
             </div>
             
-            <!-- Log Channel -->
-            <div class="config-section">
-                <h2>📋 Log Channel</h2>
+            <!-- LOG CHANNEL -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">📋 Log Channel</h3>
+                </div>
                 <div class="form-group">
-                    <label>Select Log Channel</label>
-                    <select name="logChannelId">
+                    <label class="form-label">Select Channel</label>
+                    <select name="logChannelId" class="form-select">
                         <option value="">None</option>
-                        <% const channels = guild.channels.cache.filter(ch => ch.type === 0); %>
                         <% channels.forEach(ch => { %>
                             <option value="<%= ch.id %>" <%= panel.logChannelId === ch.id ? 'selected' : '' %>>
                                 #<%= ch.name %>
@@ -236,37 +528,191 @@
                 </div>
             </div>
             
-            <button type="submit">💾 Save Configuration</button>
+            <!-- ACTIONS -->
+            <div class="card">
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-red">💾 Save Configuration</button>
+                    <button type="button" class="btn btn-green" onclick="openSendModal()">📨 Send Panel</button>
+                    <button type="button" class="btn btn-outline" onclick="refreshPanel()">🔄 Refresh Panel</button>
+                </div>
+            </div>
         </form>
+    </main>
+    
+    <!-- SEND PANEL MODAL -->
+    <div class="modal" id="sendModal">
+        <div class="modal-content">
+            <h3 class="modal-title">📨 Send Ticket Panel</h3>
+            <p style="color: #999; margin-bottom: 20px;">Select a channel to send the ticket panel</p>
+            
+            <div class="form-group">
+                <label class="form-label">Target Channel</label>
+                <select id="channelSelect" class="form-select">
+                    <option value="">Select a channel...</option>
+                    <% channels.forEach(ch => { %>
+                        <option value="<%= ch.id %>">#<%= ch.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+            
+            <div class="btn-group" style="justify-content: center; margin-top: 20px;">
+                <button type="button" class="btn btn-red" onclick="sendPanel()">📨 Send Panel</button>
+                <button type="button" class="btn btn-outline" onclick="closeSendModal()">Cancel</button>
+            </div>
+        </div>
     </div>
     
     <script>
-        async function savePanel(event) {
-            event.preventDefault();
+        let currentOptionCount = <%= (panel.options || []).length %>;
+        
+        function showAlert(type, message) {
+            const alert = document.getElementById(type === 'success' ? 'alertSuccess' : 'alertError');
+            alert.textContent = message;
+            alert.classList.add('active');
+            setTimeout(() => alert.classList.remove('active'), 4000);
+        }
+        
+        function addOption() {
+            const container = document.getElementById('optionsContainer');
+            const index = currentOptionCount;
             
-            const form = document.getElementById('panelForm');
-            const formData = new FormData(form);
+            const html = `
+                <div class="option-card" id="option-${index}">
+                    <div class="option-header">
+                        <span class="option-number">OPTION #${index + 1}</span>
+                        <button type="button" class="btn-remove" onclick="removeOption(${index})">✕ Remove</button>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label class="form-label">Label</label>
+                            <input type="text" name="option_${index}_label" class="form-input" placeholder="Ticket Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Emoji</label>
+                            <input type="text" name="option_${index}_emoji" class="form-input" value="🎫">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <input type="text" name="option_${index}_description" class="form-input" placeholder="Ticket description">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Category Channel</label>
+                        <select name="option_${index}_categoryId" class="form-select">
+                            <option value="">None</option>
+                            <% categories.forEach(cat => { %>
+                                <option value="<%= cat.id %>"><%= cat.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Allowed Support Roles</label>
+                        <select name="option_${index}_allowedRoles" class="form-select" multiple>
+                            <% roles.forEach(role => { %>
+                                <option value="<%= role.id %>"><%= role.name %></option>
+                            <% }) %>
+                        </select>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', html);
+            currentOptionCount++;
+            document.getElementById('optionCount').value = currentOptionCount;
+        }
+        
+        function removeOption(index) {
+            const container = document.getElementById('optionsContainer');
+            const options = container.querySelectorAll('.option-card');
+            if (options.length <= 1) {
+                showAlert('error', 'Minimum 1 option required!');
+                return;
+            }
+            
+            document.getElementById(`option-${index}`).remove();
+            document.getElementById('optionCount').value = container.querySelectorAll('.option-card').length;
+        }
+        
+        // Save Configuration
+        document.getElementById('mainForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            formData.set('optionCount', document.querySelectorAll('.option-card').length);
             
             try {
-                const response = await fetch('/guild/<%= guild.id %>/save-panel', {
+                const res = await fetch('/guild/<%= guild.id %>/save-panel', {
                     method: 'POST',
                     body: formData
                 });
+                const data = await res.json();
                 
-                const result = await response.json();
-                
-                if (result.success) {
-                    const successMsg = document.getElementById('successMessage');
-                    successMsg.style.display = 'block';
-                    setTimeout(() => {
-                        successMsg.style.display = 'none';
-                    }, 3000);
+                if (data.success) {
+                    showAlert('success', '✅ Configuration saved! ' + data.optionCount + ' options configured.');
                 } else {
-                    alert('Error: ' + result.message);
+                    showAlert('error', data.message);
                 }
-            } catch (error) {
-                alert('Error saving configuration');
-                console.error(error);
+            } catch (err) {
+                showAlert('error', 'Failed to save: ' + err.message);
+            }
+        });
+        
+        // Send Panel Modal
+        function openSendModal() {
+            document.getElementById('sendModal').classList.add('active');
+        }
+        
+        function closeSendModal() {
+            document.getElementById('sendModal').classList.remove('active');
+        }
+        
+        async function sendPanel() {
+            const channelId = document.getElementById('channelSelect').value;
+            if (!channelId) {
+                showAlert('error', 'Please select a channel!');
+                return;
+            }
+            
+            try {
+                const res = await fetch('/guild/<%= guild.id %>/send-panel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ channelId })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    showAlert('success', '✅ Panel sent to #' + data.channelName + '!');
+                    closeSendModal();
+                } else {
+                    showAlert('error', data.message);
+                }
+            } catch (err) {
+                showAlert('error', 'Failed to send panel: ' + err.message);
+            }
+        }
+        
+        // Refresh Panel
+        async function refreshPanel() {
+            if (!confirm('Refresh the existing panel with latest configuration?')) return;
+            
+            try {
+                const res = await fetch('/guild/<%= guild.id %>/refresh-panel', {
+                    method: 'POST'
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    showAlert('success', '✅ Panel refreshed!');
+                } else {
+                    showAlert('error', data.message);
+                }
+            } catch (err) {
+                showAlert('error', 'Failed: ' + err.message);
             }
         }
     </script>
