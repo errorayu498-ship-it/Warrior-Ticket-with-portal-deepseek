@@ -4,7 +4,15 @@ const { connectDB } = require('./database/mongodb');
 const { startWebServer } = require('./web/server');
 const fs = require('fs');
 const path = require('path');
-const chalk = require('chalk');
+
+// Custom color function to replace chalk
+const colors = {
+    green: (text) => `\x1b[32m${text}\x1b[0m`,
+    red: (text) => `\x1b[31m${text}\x1b[0m`,
+    cyan: (text) => `\x1b[36m${text}\x1b[0m`,
+    blue: (text) => `\x1b[34m${text}\x1b[0m`,
+    yellow: (text) => `\x1b[33m${text}\x1b[0m`,
+};
 
 const client = new Client({
     intents: [
@@ -30,7 +38,9 @@ for (const folder of commandFolders) {
     const commandsFiles = fs.readdirSync(path.join(commandsPath, folder)).filter(file => file.endsWith('.js'));
     for (const file of commandsFiles) {
         const command = require(path.join(commandsPath, folder, file));
-        client.commands.set(command.data.name, command);
+        if (command.data && command.data.name) {
+            client.commands.set(command.data.name, command);
+        }
     }
 }
 
@@ -51,17 +61,29 @@ for (const file of eventFiles) {
 connectDB().then(() => {
     client.login(process.env.TOKEN);
     startWebServer(client);
+}).catch(error => {
+    console.error(colors.red('❌ Failed to start bot:'), error);
+    process.exit(1);
 });
 
 // Error handling
 process.on('unhandledRejection', (error) => {
-    console.error(chalk.red('Unhandled promise rejection:'), error);
-    const logger = require('./utils/logger');
-    logger.logError(client, error);
+    console.error(colors.red('Unhandled promise rejection:'), error);
+    try {
+        const logger = require('./utils/logger');
+        logger.logError(client, error);
+    } catch (e) {
+        console.error(colors.red('Logger error:'), e);
+    }
 });
 
 process.on('uncaughtException', (error) => {
-    console.error(chalk.red('Uncaught exception:'), error);
-    const logger = require('./utils/logger');
-    logger.logError(client, error);
+    console.error(colors.red('Uncaught exception:'), error);
+    try {
+        const logger = require('./utils/logger');
+        logger.logError(client, error);
+    } catch (e) {
+        console.error(colors.red('Logger error:'), e);
+    }
+    // Don't exit, let the process continue
 });
