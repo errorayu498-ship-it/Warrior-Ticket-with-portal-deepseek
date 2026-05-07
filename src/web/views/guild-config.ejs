@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure <%= guild.name %> - Warrior Ticket Bot</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        .config-section {
+            background: #16213e;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .config-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            color: #aaa;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="url"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        input[type="color"] {
+            width: 60px;
+            height: 40px;
+            padding: 0;
+            border: none;
+            cursor: pointer;
+        }
+        select[multiple] {
+            min-height: 120px;
+        }
+        button {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #5a67d8;
+        }
+        .option-group {
+            background: #1a1a2e;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .option-group h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .back-link {
+            color: #aaa;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .success-message {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Dashboard</a>
+        <h1>⚙️ Configure: <%= guild.name %></h1>
+        
+        <div class="success-message" id="successMessage">Settings saved successfully!</div>
+        
+        <form id="panelForm" onsubmit="savePanel(event)">
+            <!-- Embed Configuration -->
+            <div class="config-section">
+                <h2>📝 Embed Settings</h2>
+                <div class="form-group">
+                    <label>Embed Title</label>
+                    <input type="text" name="title" value="<%= panel.embed.title %>" required>
+                </div>
+                <div class="form-group">
+                    <label>Embed Description</label>
+                    <textarea name="description" required><%= panel.embed.description %></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Footer Text</label>
+                    <input type="text" name="footer" value="<%= panel.embed.footer %>">
+                </div>
+                <div class="form-group">
+                    <label>Embed Color</label>
+                    <input type="color" name="color" value="<%= panel.embed.color %>">
+                </div>
+                <div class="form-group">
+                    <label>Thumbnail URL</label>
+                    <input type="url" name="thumbnail" value="<%= panel.embed.thumbnail %>">
+                </div>
+                <div class="form-group">
+                    <label>Image URL</label>
+                    <input type="url" name="image" value="<%= panel.embed.image %>">
+                </div>
+                <div class="form-group">
+                    <label>Icon URL</label>
+                    <input type="url" name="icon" value="<%= panel.embed.icon %>">
+                </div>
+            </div>
+            
+            <!-- Ticket Options -->
+            <div class="config-section">
+                <h2>🎫 Ticket Options</h2>
+                <div id="optionsContainer">
+                    <% panel.options.forEach((option, index) => { %>
+                        <div class="option-group">
+                            <h3>Option <%= index + 1 %></h3>
+                            <div class="form-group">
+                                <label>Label</label>
+                                <input type="text" name="option_<%= index %>_label" value="<%= option.label %>" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description</label>
+                                <input type="text" name="option_<%= index %>_description" value="<%= option.description %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Emoji</label>
+                                <input type="text" name="option_<%= index %>_emoji" value="<%= option.emoji %>">
+                            </div>
+                            <div class="form-group">
+                                <label>Category Channel</label>
+                                <select name="option_<%= index %>_categoryId">
+                                    <option value="">None</option>
+                                    <% categories.forEach(cat => { %>
+                                        <option value="<%= cat.id %>" <%= option.categoryId === cat.id ? 'selected' : '' %>>
+                                            <%= cat.name %>
+                                        </option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Allowed Support Roles</label>
+                                <select name="option_<%= index %>_allowedRoles" multiple>
+                                    <% roles.forEach(role => { %>
+                                        <option value="<%= role.id %>" 
+                                            <%= option.allowedRoles && option.allowedRoles.includes(role.id) ? 'selected' : '' %>>
+                                            <%= role.name %>
+                                        </option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+                <input type="hidden" name="optionCount" value="<%= panel.options.length %>">
+            </div>
+            
+            <!-- Role Configuration -->
+            <div class="config-section">
+                <h2>👥 Role Configuration</h2>
+                <div class="form-group">
+                    <label>Admin Roles (Can access all tickets)</label>
+                    <select name="adminRoles" multiple>
+                        <% roles.forEach(role => { %>
+                            <option value="<%= role.id %>"
+                                <%= panel.adminRoles && panel.adminRoles.includes(role.id) ? 'selected' : '' %>>
+                                <%= role.name %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Support Roles (Category-specific access)</label>
+                    <select name="supportRoles" multiple>
+                        <% roles.forEach(role => { %>
+                            <option value="<%= role.id %>"
+                                <%= panel.supportRoles && panel.supportRoles.includes(role.id) ? 'selected' : '' %>>
+                                <%= role.name %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Log Channel -->
+            <div class="config-section">
+                <h2>📋 Log Channel</h2>
+                <div class="form-group">
+                    <label>Select Log Channel</label>
+                    <select name="logChannelId">
+                        <option value="">None</option>
+                        <% const channels = guild.channels.cache.filter(ch => ch.type === 0); %>
+                        <% channels.forEach(ch => { %>
+                            <option value="<%= ch.id %>" <%= panel.logChannelId === ch.id ? 'selected' : '' %>>
+                                #<%= ch.name %>
+                            </option>
+                        <% }) %>
+                    </select>
+                </div>
+            </div>
+            
+            <button type="submit">💾 Save Configuration</button>
+        </form>
+    </div>
+    
+    <script>
+        async function savePanel(event) {
+            event.preventDefault();
+            
+            const form = document.getElementById('panelForm');
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('/guild/<%= guild.id %>/save-panel', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const successMsg = document.getElementById('successMessage');
+                    successMsg.style.display = 'block';
+                    setTimeout(() => {
+                        successMsg.style.display = 'none';
+                    }, 3000);
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (error) {
+                alert('Error saving configuration');
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
