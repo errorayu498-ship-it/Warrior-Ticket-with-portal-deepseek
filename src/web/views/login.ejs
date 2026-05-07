@@ -3,84 +3,216 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warrior Ticket Bot - Login</title>
+    <title><%= botName %> • Portal Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
+            font-family: 'Rajdhani', sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(255, 0, 0, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(255, 0, 0, 0.05) 0%, transparent 50%);
         }
-        .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            width: 400px;
-            max-width: 90%;
+        
+        .login-wrapper {
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
         }
-        .logo {
+        
+        .login-card {
+            background: #111111;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 50px 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(255, 0, 0, 0.15);
+        }
+        
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #FF0000, #CC0000, #FF0000);
+        }
+        
+        .login-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 0, 0, 0.01) 2px, rgba(255, 0, 0, 0.01) 4px);
+            pointer-events: none;
+        }
+        
+        .logo-section {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
         }
-        .logo h1 {
-            color: #667eea;
-            font-size: 2em;
-            margin-bottom: 5px;
+        
+        .logo-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.5));
+            animation: pulse 2s infinite;
         }
-        .logo p {
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .logo-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #FF0000;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+        }
+        
+        .logo-subtitle {
+            font-size: 14px;
             color: #666;
+            letter-spacing: 3px;
+            margin-top: 5px;
+            text-transform: uppercase;
         }
-        input[type="password"] {
+        
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .input-group label {
+            display: block;
+            color: #999;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        
+        .input-field {
             width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: 2px solid #ddd;
-            border-radius: 10px;
+            padding: 16px 20px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: #fff;
             font-size: 16px;
-            transition: border-color 0.3s;
+            font-family: 'Rajdhani', sans-serif;
+            transition: all 0.3s;
         }
-        input[type="password"]:focus {
+        
+        .input-field:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #FF0000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+            background: #0f0f0f;
         }
-        button {
+        
+        .input-field::placeholder {
+            color: #444;
+        }
+        
+        .btn-login {
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 16px;
+            background: linear-gradient(135deg, #FF0000, #CC0000);
+            color: #fff;
             border: none;
-            border-radius: 10px;
-            font-size: 18px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 3px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
         }
-        button:hover {
-            transform: scale(1.02);
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.4);
+            background: linear-gradient(135deg, #FF1111, #DD0000);
         }
-        .error {
-            color: #e74c3c;
+        
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        
+        .error-msg {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            color: #FF4444;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 20px;
             text-align: center;
-            margin-top: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .footer-text {
+            text-align: center;
+            color: #444;
+            font-size: 12px;
+            margin-top: 30px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="logo">
-            <h1>🎫 Warrior Ticket</h1>
-            <p>Advanced Ticket Management Portal</p>
-        </div>
-        <form method="POST" action="/login">
-            <input type="password" name="password" placeholder="Enter Password" required>
-            <button type="submit">Access Portal</button>
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="logo-section">
+                <div class="logo-icon">🎫</div>
+                <h1 class="logo-title"><%= botName %></h1>
+                <p class="logo-subtitle">Premium Ticket Management</p>
+            </div>
+            
+            <form method="POST" action="/login">
+                <div class="input-group">
+                    <label>🔐 Portal Password</label>
+                    <input type="password" name="password" class="input-field" placeholder="Enter your secure password" required autofocus>
+                </div>
+                
+                <button type="submit" class="btn-login">⚡ Access Portal</button>
+            </form>
+            
             <% if (error) { %>
-                <p class="error"><%= error %></p>
+                <div class="error-msg"><%= error %></div>
             <% } %>
-        </form>
+            
+            <p class="footer-text">🔴 Warrior Development • Secure Access</p>
+        </div>
     </div>
 </body>
 </html>
